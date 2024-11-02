@@ -1,0 +1,32 @@
+{
+  "parent": "exmachinis:root",
+  "criteria": {
+    "has_flux_hammer": {
+      "conditions": {
+        "items": [
+          {
+            "items": "exmachinis:flux_hammer"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancement.exmachinis.flux_hammer.desc"
+    },
+    "icon": {
+      "count": 1,
+      "id": "exmachinis:flux_hammer"
+    },
+    "title": {
+      "translate": "advancement.exmachinis.flux_hammer"
+    }
+  },
+  "requirements": [
+    [
+      "has_flux_hammer"
+    ]
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "group": "exmachinis",
+  "key": {
+    "b": {
+      "item": "minecraft:iron_bars"
+    },
+    "h": {
+      "item": "minecraft:hopper"
+    },
+    "i": {
+      "tag": "c:storage_blocks/iron"
+    },
+    "s": {
+      "tag": "exmachinis:sieves"
+    }
+  },
+  "pattern": [
+    "bbb",
+    "bsb",
+    "ihi"
+  ],
+  "result": {
+    "count": 1,
+    "id": "exmachinis:flux_sieve"
+  }
+}

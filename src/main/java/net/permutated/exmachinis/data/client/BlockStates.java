@@ -1,9 +1,9 @@
 package net.permutated.exmachinis.data.client;
 
 import net.minecraft.data.PackOutput;
-import net.minecraftforge.client.model.generators.BlockStateProvider;
-import net.minecraftforge.client.model.generators.ModelFile;
-import net.minecraftforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.client.model.generators.BlockStateProvider;
+import net.neoforged.neoforge.client.model.generators.ModelFile;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.permutated.exmachinis.ExMachinis;
 import net.permutated.exmachinis.ModRegistry;
 import net.permutated.exmachinis.machines.hammer.FluxHammerBlock;

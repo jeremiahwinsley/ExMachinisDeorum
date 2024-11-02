@@ -43,6 +43,7 @@
   "tooltip.exmachinis.comparatorSetDirection1": "Sneak + right-click on a block to",
   "tooltip.exmachinis.comparatorSetDirection2": "set the redstone output direction",
   "tooltip.exmachinis.comparatorSetDirection3": "to the clicked face of the block.",
+  "tooltip.exmachinis.comparatorSlot": "Comparator Slot",
   "tooltip.exmachinis.costPerBlock": "RF cost per item: %d",
   "tooltip.exmachinis.diamondItemsProcessed": "16/32/64",
   "tooltip.exmachinis.energyPerTick": "RF per tick: %s RF/t",

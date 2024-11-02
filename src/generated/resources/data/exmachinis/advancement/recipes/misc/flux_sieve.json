@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_sieve": {
+      "conditions": {
+        "items": [
+          {
+            "items": "#exmachinis:sieves"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "exmachinis:flux_sieve"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_sieve"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "exmachinis:flux_sieve"
+    ]
+  }
+}

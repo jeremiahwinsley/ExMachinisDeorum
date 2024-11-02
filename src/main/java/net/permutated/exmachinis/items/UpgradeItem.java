@@ -6,10 +6,8 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.level.Level;
 import net.permutated.exmachinis.ConfigHolder;
 
-import javax.annotation.Nullable;
 import java.util.List;
 
 import static net.permutated.exmachinis.util.TranslationKey.translateTooltip;
@@ -48,8 +46,8 @@ public class UpgradeItem extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flagIn) {
-        super.appendHoverText(stack, level, tooltip, flagIn);
+    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag tooltipFlag) {
+        super.appendHoverText(stack, context, tooltip, tooltipFlag);
 
         // Items Processed: 2/4/8
         // RF cost per block: 1280

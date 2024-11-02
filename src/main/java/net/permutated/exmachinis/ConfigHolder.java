@@ -1,10 +1,8 @@
 package net.permutated.exmachinis;
 
-import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.neoforge.common.ModConfigSpec;
 import org.apache.commons.lang3.tuple.Pair;
 
-@Mod.EventBusSubscriber(modid = ExMachinis.MODID)
 public class ConfigHolder {
     private ConfigHolder() {
         // nothing to do
@@ -15,36 +13,35 @@ public class ConfigHolder {
     public static final String CATEGORY_HAMMER = "hammer";
     public static final String CATEGORY_COMPACTOR = "compactor";
 
-
     public static final ServerConfig SERVER;
-    public static final ForgeConfigSpec SERVER_SPEC;
+    public static final ModConfigSpec SERVER_SPEC;
 
     static {
-        final Pair<ServerConfig, ForgeConfigSpec> specPair = new ForgeConfigSpec.Builder().configure(ServerConfig::new);
+        final Pair<ServerConfig, ModConfigSpec> specPair = new ModConfigSpec.Builder().configure(ServerConfig::new);
         SERVER_SPEC = specPair.getRight();
         SERVER = specPair.getLeft();
     }
 
     public static class ServerConfig {
         // CATEGORY_GENERAL
-        public final ForgeConfigSpec.IntValue goldTicksPerOperation;
-        public final ForgeConfigSpec.IntValue goldEnergyPerBlock;
+        public final ModConfigSpec.IntValue goldTicksPerOperation;
+        public final ModConfigSpec.IntValue goldEnergyPerBlock;
 
-        public final ForgeConfigSpec.IntValue diamondTicksPerOperation;
-        public final ForgeConfigSpec.IntValue diamondEnergyPerBlock;
+        public final ModConfigSpec.IntValue diamondTicksPerOperation;
+        public final ModConfigSpec.IntValue diamondEnergyPerBlock;
 
-        public final ForgeConfigSpec.IntValue netheriteTicksPerOperation;
-        public final ForgeConfigSpec.IntValue netheriteEnergyPerBlock;
+        public final ModConfigSpec.IntValue netheriteTicksPerOperation;
+        public final ModConfigSpec.IntValue netheriteEnergyPerBlock;
 
-        public final ForgeConfigSpec.IntValue energyBufferSize;
-        public final ForgeConfigSpec.IntValue maxEnergyPerTick;
+        public final ModConfigSpec.IntValue energyBufferSize;
+        public final ModConfigSpec.IntValue maxEnergyPerTick;
 
         // CATEGORY_SIEVE
-        public final ForgeConfigSpec.BooleanValue sieveFortuneEnabled;
-        public final ForgeConfigSpec.BooleanValue sieveBulkProcessing;
+        public final ModConfigSpec.BooleanValue sieveFortuneEnabled;
+        public final ModConfigSpec.BooleanValue sieveBulkProcessing;
 
 
-        ServerConfig(ForgeConfigSpec.Builder builder) {
+        ServerConfig(ModConfigSpec.Builder builder) {
             builder
                 .comment("General balance configs",
                     "The default calculations for each upgrade are calculated as follows:",

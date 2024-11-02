@@ -3,9 +3,10 @@ package net.permutated.exmachinis.machines.compactor;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.level.block.Block;
-import net.minecraftforge.registries.RegistryObject;
 import net.permutated.exmachinis.ModRegistry;
 import net.permutated.exmachinis.machines.base.AbstractMachineMenu;
+
+import java.util.function.Supplier;
 
 public class FluxCompactorMenu extends AbstractMachineMenu {
 
@@ -15,7 +16,7 @@ public class FluxCompactorMenu extends AbstractMachineMenu {
     }
 
     @Override
-    protected RegistryObject<Block> getBlock() {
+    protected Supplier<Block> getBlock() {
         return ModRegistry.FLUX_COMPACTOR_BLOCK;
     }
 }

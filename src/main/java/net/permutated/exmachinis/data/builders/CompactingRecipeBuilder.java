@@ -1,30 +1,27 @@
 package net.permutated.exmachinis.data.builders;
 
-import com.google.gson.JsonObject;
-import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.ItemLike;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.permutated.exmachinis.ModRegistry;
+import net.neoforged.neoforge.common.conditions.ModLoadedCondition;
 import net.permutated.exmachinis.data.RecipeException;
+import net.permutated.exmachinis.recipes.CompactingRecipe;
 import net.permutated.exmachinis.util.Constants;
 import net.permutated.exmachinis.util.IngredientStack;
-import net.permutated.exmachinis.util.SerializerUtil;
+import net.permutated.exmachinis.util.ResourceUtil;
 
-import java.util.Objects;
-import java.util.function.Consumer;
+import java.util.function.Supplier;
 
-public class CompactingRecipeBuilder extends AbstractRecipeBuilder {
+public class CompactingRecipeBuilder {
 
     private IngredientStack ingredient = new IngredientStack(Ingredient.EMPTY, 0);
     private final ItemStack output;
 
-    @Override
     protected String getPrefix() {
         return Constants.COMPACTING;
     }
@@ -41,6 +38,10 @@ public class CompactingRecipeBuilder extends AbstractRecipeBuilder {
         return new CompactingRecipeBuilder(new ItemStack(output));
     }
 
+    public static CompactingRecipeBuilder builder(Supplier<Item> output) {
+        return builder(output.get());
+    }
+
     public CompactingRecipeBuilder setInput(Ingredient input, int count) {
         this.ingredient = new IngredientStack(input, count);
         return this;
@@ -54,37 +55,19 @@ public class CompactingRecipeBuilder extends AbstractRecipeBuilder {
         return setInput(Ingredient.of(input), count);
     }
 
-    protected void validate(ResourceLocation id) {
+    public void build(RecipeOutput consumer) {
+        ResourceLocation key = BuiltInRegistries.ITEM.getKey(output.getItem());
+        String modId = key.getNamespace();
+        String path = key.getPath();
+
+        ResourceLocation id = ResourceUtil.prefix(getPrefix() + "/" + path);
+
         if (Ingredient.EMPTY.equals(ingredient.ingredient())) {
             throw new RecipeException(id.toString(), "input is required");
         }
-    }
 
-    public void build(Consumer<FinishedRecipe> consumer) {
-        String path = Objects.requireNonNull(ForgeRegistries.ITEMS.getKey(output.getItem())).getPath();
-        build(consumer, id(path));
-    }
-
-    @Override
-    protected AbstractResult getResult(ResourceLocation id) {
-        return new CompactingRecipeBuilder.Result(id);
-    }
-
-    public class Result extends AbstractResult {
-        public Result(ResourceLocation id) {
-            super(id);
-        }
-
-        @Override
-        public void serializeRecipeData(JsonObject jsonObject) {
-            jsonObject.add(Constants.JSON.INPUT, ingredient.toJson());
-            jsonObject.add(Constants.JSON.OUTPUT, SerializerUtil.serializeItemStack(output));
-        }
-
-        @Override
-        public RecipeSerializer<?> getType() {
-            return ModRegistry.COMPACTING_RECIPE_SERIALIZER.get();
-        }
-
+        consumer
+            .withConditions(new ModLoadedCondition(modId))
+            .accept(id, new CompactingRecipe(ingredient, output), null);
     }
 }

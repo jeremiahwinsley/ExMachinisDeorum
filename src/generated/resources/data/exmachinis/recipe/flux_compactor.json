@@ -1,0 +1,28 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "group": "exmachinis",
+  "key": {
+    "c": {
+      "item": "minecraft:comparator"
+    },
+    "h": {
+      "item": "minecraft:hopper"
+    },
+    "i": {
+      "tag": "c:storage_blocks/iron"
+    },
+    "p": {
+      "item": "minecraft:piston"
+    }
+  },
+  "pattern": [
+    "ipi",
+    "pcp",
+    "ihi"
+  ],
+  "result": {
+    "count": 1,
+    "id": "exmachinis:flux_compactor"
+  }
+}

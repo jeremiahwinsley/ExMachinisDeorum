@@ -1,0 +1,28 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "group": "exmachinis",
+  "key": {
+    "d": {
+      "item": "exdeorum:diamond_hammer"
+    },
+    "g": {
+      "tag": "c:glass_panes"
+    },
+    "h": {
+      "item": "minecraft:hopper"
+    },
+    "i": {
+      "tag": "c:storage_blocks/iron"
+    }
+  },
+  "pattern": [
+    "ggg",
+    "gdg",
+    "ihi"
+  ],
+  "result": {
+    "count": 1,
+    "id": "exmachinis:flux_hammer"
+  }
+}

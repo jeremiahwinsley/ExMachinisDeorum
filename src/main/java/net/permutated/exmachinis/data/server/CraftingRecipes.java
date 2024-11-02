@@ -1,18 +1,17 @@
 package net.permutated.exmachinis.data.server;
 
+import net.allthemods.alltheores.blocks.BlockList;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
-import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.data.recipes.RecipeCategory;
+import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraftforge.common.Tags;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.common.Tags;
 import net.permutated.exmachinis.ExMachinis;
 import net.permutated.exmachinis.ModRegistry;
 import net.permutated.exmachinis.data.builders.CompactingRecipeBuilder;
@@ -20,11 +19,11 @@ import thedarkcolour.exdeorum.registry.EItems;
 
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.Consumer;
+import java.util.concurrent.CompletableFuture;
 
 public class CraftingRecipes extends RecipeProvider {
-    public CraftingRecipes(PackOutput packOutput) {
-        super(packOutput);
+    public CraftingRecipes(PackOutput packOutput, CompletableFuture<HolderLookup.Provider> provider) {
+        super(packOutput, provider);
     }
 
     private ShapedRecipeBuilder shaped(ItemLike provider) {
@@ -33,12 +32,12 @@ public class CraftingRecipes extends RecipeProvider {
     }
 
     @Override
-    protected void buildRecipes(Consumer<FinishedRecipe> consumer) {
+    protected void buildRecipes(RecipeOutput consumer) {
         buildCraftingRecipes(consumer);
         buildCompactingRecipes(consumer);
     }
 
-    protected void buildCraftingRecipes(Consumer<FinishedRecipe> consumer) {
+    protected void buildCraftingRecipes(RecipeOutput consumer) {
         shaped(ModRegistry.GOLD_UPGRADE.get())
             .pattern("tct")
             .pattern("gdg")
@@ -46,7 +45,7 @@ public class CraftingRecipes extends RecipeProvider {
             .define('t', Items.CYAN_TERRACOTTA)
             .define('c', Tags.Items.DYES_GREEN)
             .define('d', Tags.Items.INGOTS_GOLD)
-            .define('g', Tags.Items.GLASS)
+            .define('g', Tags.Items.GLASS_BLOCKS)
             .unlockedBy("has_gold_ingot", has(Tags.Items.INGOTS_GOLD))
             .save(consumer);
 
@@ -75,20 +74,19 @@ public class CraftingRecipes extends RecipeProvider {
             .define('t', Items.CYAN_TERRACOTTA)
             .define('c', Tags.Items.DYES_GREEN)
             .define('d', Items.COMPARATOR)
-            .define('g', Tags.Items.GLASS)
+            .define('g', Tags.Items.GLASS_BLOCKS)
             .unlockedBy("has_comparator", has(Items.COMPARATOR))
             .save(consumer);
 
-        var sieveTag = TagKey.create(ForgeRegistries.ITEMS.getRegistryKey(), new ResourceLocation("exmachinis:sieves"));
         shaped(ModRegistry.FLUX_SIEVE_ITEM.get())
             .pattern("bbb")
             .pattern("bsb")
             .pattern("ihi")
             .define('b', Items.IRON_BARS)
-            .define('s', sieveTag)
+            .define('s', ModRegistry.SIEVES)
             .define('i', Tags.Items.STORAGE_BLOCKS_IRON)
             .define('h', Items.HOPPER)
-            .unlockedBy("has_sieve", has(sieveTag))
+            .unlockedBy("has_sieve", has(ModRegistry.SIEVES))
             .save(consumer);
 
         var hammerItem = EItems.DIAMOND_HAMMER.get();
@@ -126,7 +124,7 @@ public class CraftingRecipes extends RecipeProvider {
             .save(consumer);
     }
 
-    protected void buildCompactingRecipes(Consumer<FinishedRecipe> consumer) {
+    protected void buildCompactingRecipes(RecipeOutput consumer) {
         CompactingRecipeBuilder.builder(Objects.requireNonNull(Items.IRON_ORE))
             .setInput(Ingredient.of(EItems.IRON_ORE_CHUNK.get()), 4)
             .build(consumer);
@@ -139,24 +137,21 @@ public class CraftingRecipes extends RecipeProvider {
             .setInput(Ingredient.of(EItems.COPPER_ORE_CHUNK.get()), 4)
             .build(consumer);
 
-//        var defaultPieces = List.of(
-//            EItems.LEAD_ORE_CHUNK,
-//            EItems.NICKEL_ORE_CHUNK,
-//            EItems.SILVER_ORE_CHUNK,
-//            EItems.TIN_ORE_CHUNK,
-//            EItems.ALUMINUM_ORE_CHUNK,
-//            EItems.PLATINUM_ORE_CHUNK,
-//            EItems.URANIUM_ORE_CHUNK,
-//            EItems.ZINC_ORE_CHUNK
-//        );
-//
-//        for (var piece : defaultPieces) {
-//            var oreItem = Objects.requireNonNull(piece.getRawOreItem())
-//                .map(ItemDefinition::asItem, item -> item);
-//            CompactingRecipeBuilder.builder(oreItem)
-//                .setInput(Ingredient.of(piece.getPieceItem()), 4)
-//                .build(consumer);
-//        }
+        var oreMap = Map.ofEntries(
+            Map.entry(BlockList.LEAD_ORE_ITEM, EItems.LEAD_ORE_CHUNK),
+            Map.entry(BlockList.NICKEL_ORE_ITEM, EItems.NICKEL_ORE_CHUNK),
+            Map.entry(BlockList.SILVER_ORE_ITEM, EItems.SILVER_ORE_CHUNK),
+            Map.entry(BlockList.TIN_ORE_ITEM, EItems.TIN_ORE_CHUNK),
+            Map.entry(BlockList.ALUMINUM_ORE_ITEM, EItems.ALUMINUM_ORE_CHUNK),
+            Map.entry(BlockList.PLATINUM_ORE_ITEM, EItems.PLATINUM_ORE_CHUNK),
+            Map.entry(BlockList.URANIUM_ORE_ITEM, EItems.URANIUM_ORE_CHUNK),
+            Map.entry(BlockList.ZINC_ORE_ITEM, EItems.ZINC_ORE_CHUNK),
+            Map.entry(BlockList.OSMIUM_ORE_ITEM, EItems.OSMIUM_ORE_CHUNK)
+        );
+
+        oreMap.forEach((ore, chunk) -> CompactingRecipeBuilder.builder(ore)
+            .setInput(chunk, 4)
+            .build(consumer));
 
         var pebbleMap = Map.ofEntries(
             Map.entry(Blocks.ANDESITE, EItems.ANDESITE_PEBBLE.get()),

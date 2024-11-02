@@ -5,11 +5,10 @@ import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
 import net.permutated.exmachinis.ExMachinis;
 import net.permutated.exmachinis.ModRegistry;
 import net.permutated.exmachinis.compat.exnihilo.ExNihiloAPI;
@@ -68,15 +67,8 @@ public class FluxHammerTile extends AbstractMachineTile {
             // ensure that the output is a valid inventory, and get an IItemHandler
             Direction output = getBlockState().getValue(AbstractMachineBlock.OUTPUT);
             BlockPos outPos = getBlockPos().relative(output);
-            BlockEntity target = level.getBlockEntity(outPos);
-            if (target == null) {
-                workStatus = WorkStatus.MISSING_INVENTORY;
-                return;
-            }
 
-            IItemHandler itemHandler = target.getCapability(ForgeCapabilities.ITEM_HANDLER, output.getOpposite())
-                .resolve()
-                .orElse(null);
+            IItemHandler itemHandler = level.getCapability(Capabilities.ItemHandler.BLOCK, outPos, output.getOpposite());
             if (itemHandler == null || itemHandler.getSlots() == 0) {
                 workStatus = WorkStatus.MISSING_INVENTORY;
                 return;
@@ -166,12 +158,7 @@ public class FluxHammerTile extends AbstractMachineTile {
         if (level != null && getBlockState().getValue(FluxHammerBlock.HOPPER).equals(Boolean.TRUE)) {
             // ensure that block above is a valid inventory, and get an IItemHandler
             BlockPos above = getBlockPos().above();
-            BlockEntity targetAbove = level.getBlockEntity(above);
-            if (targetAbove != null) {
-                inputItemHandler = targetAbove.getCapability(ForgeCapabilities.ITEM_HANDLER, Direction.DOWN)
-                    .resolve()
-                    .orElse(null);
-            }
+            inputItemHandler = level.getCapability(Capabilities.ItemHandler.BLOCK, above, Direction.DOWN);
         }
 
         if (inputItemHandler != null) {

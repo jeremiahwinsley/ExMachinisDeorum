@@ -1,26 +1,26 @@
 package net.permutated.exmachinis.recipes;
 
 import com.google.common.base.Preconditions;
-import com.google.gson.JsonObject;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.item.crafting.SingleRecipeInput;
+import net.minecraft.world.level.Level;
 import net.permutated.exmachinis.ModRegistry;
 import net.permutated.exmachinis.util.Constants;
 import net.permutated.exmachinis.util.IngredientStack;
-import net.permutated.exmachinis.util.SerializerUtil;
 
-import javax.annotation.Nullable;
-
-public class CompactingRecipe extends AbstractMachineRecipe {
-    public static final CompactingRecipe EMPTY = new CompactingRecipe(new ResourceLocation("empty"), IngredientStack.EMPTY, ItemStack.EMPTY);
+public class CompactingRecipe implements Recipe<SingleRecipeInput> {
     private final IngredientStack ingredient;
     private final ItemStack output;
 
-    public CompactingRecipe(ResourceLocation id, IngredientStack input, ItemStack output) {
-        super(id);
+    public CompactingRecipe(IngredientStack input, ItemStack output) {
         Preconditions.checkNotNull(input, "input cannot be null.");
         Preconditions.checkState(input.count() > 0, "input count must be greater than 0");
         Preconditions.checkNotNull(output, "output cannot be null.");
@@ -39,11 +39,6 @@ public class CompactingRecipe extends AbstractMachineRecipe {
         return ModRegistry.COMPACTING_RECIPE_TYPE.get();
     }
 
-    public void write(FriendlyByteBuf buffer) {
-        ingredient.toNetwork(buffer);
-        buffer.writeItem(output);
-    }
-
     public IngredientStack getIngredient() {
         return ingredient;
     }
@@ -53,26 +48,45 @@ public class CompactingRecipe extends AbstractMachineRecipe {
     }
 
     public static class Serializer implements RecipeSerializer<CompactingRecipe> {
-        @Override
-        public CompactingRecipe fromJson(ResourceLocation resourceLocation, JsonObject jsonObject) {
-            IngredientStack input = IngredientStack.fromJson(jsonObject.getAsJsonObject(Constants.JSON.INPUT));
-            ItemStack output = SerializerUtil.getItemStack(jsonObject, Constants.JSON.OUTPUT);
+        private static final MapCodec<CompactingRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+            IngredientStack.CODEC.fieldOf(Constants.JSON.INPUT).forGetter(CompactingRecipe::getIngredient),
+            ItemStack.CODEC.fieldOf(Constants.JSON.OUTPUT).forGetter(CompactingRecipe::getOutput)
+        ).apply(instance, CompactingRecipe::new));
 
-            return new CompactingRecipe(resourceLocation, input, output);
-        }
-
-        @Nullable
-        @Override
-        public CompactingRecipe fromNetwork(ResourceLocation resourceLocation, FriendlyByteBuf buffer) {
-            IngredientStack input = IngredientStack.fromNetwork(buffer);
-            ItemStack output = buffer.readItem();
-
-            return new CompactingRecipe(resourceLocation, input, output);
-        }
+        private static final StreamCodec<RegistryFriendlyByteBuf, CompactingRecipe> STREAM_CODEC = StreamCodec.composite(
+            IngredientStack.STREAM_CODEC, CompactingRecipe::getIngredient,
+            ItemStack.STREAM_CODEC, CompactingRecipe::getOutput,
+            CompactingRecipe::new
+        );
 
         @Override
-        public void toNetwork(FriendlyByteBuf buffer, CompactingRecipe compactingRecipe) {
-            compactingRecipe.write(buffer);
+        public MapCodec<CompactingRecipe> codec() {
+            return CODEC;
         }
+
+        @Override
+        public StreamCodec<RegistryFriendlyByteBuf, CompactingRecipe> streamCodec() {
+            return STREAM_CODEC;
+        }
+    }
+
+    @Override
+    public boolean matches(SingleRecipeInput recipeInput, Level level) {
+        return this.ingredient.test(recipeInput.getItem(0));
+    }
+
+    @Override
+    public ItemStack assemble(SingleRecipeInput recipeInput, HolderLookup.Provider registries) {
+        return this.output.copy();
+    }
+
+    @Override
+    public boolean canCraftInDimensions(int width, int height) {
+        return false;
+    }
+
+    @Override
+    public ItemStack getResultItem(HolderLookup.Provider registries) {
+        return this.output.copy();
     }
 }

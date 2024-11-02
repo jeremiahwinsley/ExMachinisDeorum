@@ -1,0 +1,28 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "group": "exmachinis",
+  "key": {
+    "c": {
+      "tag": "c:dyes/green"
+    },
+    "d": {
+      "tag": "c:ingots/gold"
+    },
+    "g": {
+      "tag": "c:glass_blocks"
+    },
+    "t": {
+      "item": "minecraft:cyan_terracotta"
+    }
+  },
+  "pattern": [
+    "tct",
+    "gdg",
+    "ggg"
+  ],
+  "result": {
+    "count": 1,
+    "id": "exmachinis:gold_upgrade"
+  }
+}

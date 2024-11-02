@@ -5,8 +5,6 @@ import net.minecraft.world.item.ItemStack;
 import java.util.ArrayList;
 import java.util.List;
 
-import static net.minecraftforge.items.ItemHandlerHelper.copyStackWithSize;
-
 public class ItemStackUtil {
     private ItemStackUtil() {
         // nothing to do
@@ -25,10 +23,10 @@ public class ItemStackUtil {
         int amount = count * times;
         List<ItemStack> output = new ArrayList<>();
         while (amount > max) {
-            output.add(copyStackWithSize(input, max));
+            output.add(input.copyWithCount(max));
             amount -= max;
         }
-        output.add(copyStackWithSize(input, amount));
+        output.add(input.copyWithCount(amount));
         return output;
     }
 
@@ -41,6 +39,6 @@ public class ItemStackUtil {
      */
     public static ItemStack multiplyStackCount(ItemStack input, int times) {
         int count = input.getCount() * times;
-        return copyStackWithSize(input, count);
+        return input.copyWithCount(count);
     }
 }

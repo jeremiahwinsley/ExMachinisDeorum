@@ -1,9 +1,12 @@
 package net.permutated.exmachinis.compat.exnihilo;
 
+import net.minecraft.core.Holder;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.permutated.exmachinis.ConfigHolder;
@@ -34,7 +37,7 @@ public class ExNihiloAPI {
     }
 
     private static ItemStack getProbabilityResult(LootContext context, ProbabilityRecipe recipe, int fortune) {
-        Item item = recipe.result;
+        ItemStack item = recipe.result;
         int amount = recipe.resultAmount.getInt(context);
 
         for(int i = 0; i < fortune; ++i) {
@@ -43,7 +46,7 @@ public class ExNihiloAPI {
             }
         }
 
-        return new ItemStack(item, amount);
+        return item.copyWithCount(amount);
     }
 
     public static boolean canHammer(ItemStack stack) {
@@ -82,7 +85,9 @@ public class ExNihiloAPI {
 
             int fortune = 0;
             if (Boolean.TRUE.equals(ConfigHolder.SERVER.sieveFortuneEnabled.get())) {
-                fortune = mesh.getEnchantmentLevel(Enchantments.BLOCK_FORTUNE);
+                // TODO is this going to be laggy?
+                Holder<Enchantment> holder = level.registryAccess().registryOrThrow(Registries.ENCHANTMENT).getHolderOrThrow(Enchantments.FORTUNE);
+                fortune = mesh.getEnchantmentLevel(holder);
             }
 
             List<ItemStack> output = new ArrayList<>();

@@ -14,23 +14,23 @@ public class ResourceUtil {
     }
 
     public static ResourceLocation prefix(String path) {
-        return new ResourceLocation(ExMachinis.MODID, path);
+        return ResourceLocation.fromNamespaceAndPath(ExMachinis.MODID, path);
     }
 
     public static String id(String path) {
         return prefix(path).toString();
     }
 
-    public static ResourceLocation forge(String path) {
-        return new ResourceLocation("forge", path);
+    public static ResourceLocation common(String path) {
+        return ResourceLocation.fromNamespaceAndPath("c", path);
     }
 
     public static TagKey<Item> tag(String path) {
-        return ItemTags.create(new ResourceLocation(path));
+        return ItemTags.create(ResourceLocation.parse(path));
     }
 
     public static TagKey<Block> blockTag(String path) {
-        return BlockTags.create(new ResourceLocation(path));
+        return BlockTags.create(ResourceLocation.parse(path));
     }
 
     public static ResourceLocation block(String path) {

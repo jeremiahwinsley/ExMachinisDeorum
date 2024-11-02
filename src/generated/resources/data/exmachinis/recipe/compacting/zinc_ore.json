@@ -1,0 +1,19 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "alltheores"
+    }
+  ],
+  "type": "exmachinis:compacting",
+  "input": {
+    "count": 4,
+    "ingredient": {
+      "item": "exdeorum:zinc_ore_chunk"
+    }
+  },
+  "output": {
+    "count": 1,
+    "id": "alltheores:zinc_ore"
+  }
+}

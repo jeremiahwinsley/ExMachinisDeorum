@@ -14,11 +14,10 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemStackHandler;
-import net.minecraftforge.items.SlotItemHandler;
-import net.minecraftforge.items.wrapper.InvWrapper;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemStackHandler;
+import net.neoforged.neoforge.items.SlotItemHandler;
+import net.neoforged.neoforge.items.wrapper.InvWrapper;
 import net.permutated.exmachinis.ExMachinis;
 import net.permutated.exmachinis.compat.exnihilo.ExNihiloAPI;
 import net.permutated.exmachinis.items.ComparatorUpgradeItem;
@@ -29,6 +28,7 @@ import javax.annotation.Nullable;
 import java.util.function.IntConsumer;
 import java.util.function.IntSupplier;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 public abstract class AbstractMachineMenu extends AbstractContainerMenu {
     private final ContainerLevelAccess containerLevelAccess;
@@ -57,7 +57,7 @@ public abstract class AbstractMachineMenu extends AbstractContainerMenu {
             BlockEntity blockEntity = serverLevel.getBlockEntity(pos);
             if (blockEntity instanceof AbstractMachineTile tile) {
                 this.dataHolder = new DataHolderServer(tile);
-                tile.overlay.ifPresent(this::registerHandlerSlots);
+                registerHandlerSlots(tile.overlayItemhandler);
             } else {
                 ExMachinis.LOGGER.error("Tried to create DataHolder on server, but did not find matching tile for pos: {}", pos);
                 this.dataHolder = new DataHolderClient();
@@ -72,7 +72,7 @@ public abstract class AbstractMachineMenu extends AbstractContainerMenu {
         registerDataSlots();
     }
 
-    protected abstract RegistryObject<Block> getBlock();
+    protected abstract Supplier<Block> getBlock();
 
     protected WorkStatus getWorkStatus() {
         return dataHolder.getWorkStatus();
@@ -90,7 +90,7 @@ public abstract class AbstractMachineMenu extends AbstractContainerMenu {
 
         int inventorySize = totalSlots;
 
-        if (slot != null && slot.hasItem()) {
+        if (slot.hasItem()) {
             ItemStack stack = slot.getItem();
             itemstack = stack.copy();
 

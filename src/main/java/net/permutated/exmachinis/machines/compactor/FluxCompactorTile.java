@@ -4,16 +4,17 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
 import net.permutated.exmachinis.ModRegistry;
 import net.permutated.exmachinis.machines.base.AbstractMachineBlock;
 import net.permutated.exmachinis.machines.base.AbstractMachineTile;
 import net.permutated.exmachinis.recipes.CompactingRecipe;
 import net.permutated.exmachinis.util.WorkStatus;
+
+import java.util.Optional;
 
 import static net.permutated.exmachinis.util.ItemStackUtil.multiplyStackCount;
 
@@ -40,15 +41,8 @@ public class FluxCompactorTile extends AbstractMachineTile {
             // ensure that the output is a valid inventory, and get an IItemHandler
             Direction output = getBlockState().getValue(AbstractMachineBlock.OUTPUT);
             BlockPos outPos = getBlockPos().relative(output);
-            BlockEntity target = level.getBlockEntity(outPos);
-            if (target == null) {
-                workStatus = WorkStatus.MISSING_INVENTORY;
-                return;
-            }
 
-            IItemHandler itemHandler = target.getCapability(ForgeCapabilities.ITEM_HANDLER, output.getOpposite())
-                .resolve()
-                .orElse(null);
+            IItemHandler itemHandler = level.getCapability(Capabilities.ItemHandler.BLOCK, outPos, output.getOpposite());
             if (itemHandler == null || itemHandler.getSlots() == 0) {
                 workStatus = WorkStatus.MISSING_INVENTORY;
                 return;
@@ -80,10 +74,11 @@ public class FluxCompactorTile extends AbstractMachineTile {
 
                 ItemStack stack = itemStackHandler.getStackInSlot(i);
                 if (!stack.isEmpty()) {
-                    CompactingRecipe recipe = ModRegistry.COMPACTING_REGISTRY.findRecipe(stack.getItem());
-                    if (recipe == CompactingRecipe.EMPTY || !recipe.getIngredient().test(stack)) {
+                    Optional<CompactingRecipe> maybe = ModRegistry.COMPACTING_REGISTRY.findRecipe(stack.getItem());
+                    if (maybe.isEmpty() || !maybe.get().getIngredient().test(stack)) {
                         continue;
                     }
+                    CompactingRecipe recipe = maybe.get();
 
                     // Compactor recipes allow multiple inputs > one output.
                     // maxProcessing is defined as the max number of outputs.

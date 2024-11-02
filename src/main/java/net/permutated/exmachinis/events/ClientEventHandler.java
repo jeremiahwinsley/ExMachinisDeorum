@@ -16,11 +16,11 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
-import net.minecraftforge.client.event.RenderHighlightEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
+import net.neoforged.neoforge.client.event.RenderHighlightEvent;
 import net.permutated.exmachinis.ExMachinis;
 import net.permutated.exmachinis.ModRegistry;
 import net.permutated.exmachinis.compat.exnihilo.ExNihiloAPI;
@@ -29,7 +29,7 @@ import net.permutated.exmachinis.util.Constants;
 
 import java.util.OptionalDouble;
 
-@Mod.EventBusSubscriber(modid = ExMachinis.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
+@EventBusSubscriber(modid = ExMachinis.MODID, bus = EventBusSubscriber.Bus.GAME, value = Dist.CLIENT)
 public class ClientEventHandler {
 
     private ClientEventHandler() {
@@ -93,14 +93,12 @@ public class ClientEventHandler {
         nY = nY / nLen;
         nZ = nZ / nLen;
 
-        consumer.vertex(stack.last().pose(), x1, y1, z1)
-            .color(BLUE)
-            .normal(stack.last().normal(), nX, nY, nZ)
-            .endVertex();
-        consumer.vertex(stack.last().pose(), x2, y2, z2)
-            .color(BLUE)
-            .normal(stack.last().normal(), nX, nY, nZ)
-            .endVertex();
+        consumer.addVertex(stack.last().pose(), x1, y1, z1)
+            .setColor(BLUE)
+            .setNormal(nX, nY, nZ);
+        consumer.addVertex(stack.last().pose(), x2, y2, z2)
+            .setColor(BLUE)
+            .setNormal(nX, nY, nZ);
     }
 
     static class OutputRenderType extends RenderType {
@@ -121,8 +119,8 @@ public class ClientEventHandler {
                 .setCullState(NO_CULL)
                 .createCompositeState(false));
 
-        public OutputRenderType(String p_173178_, VertexFormat p_173179_, VertexFormat.Mode p_173180_, int p_173181_, boolean p_173182_, boolean p_173183_, Runnable p_173184_, Runnable p_173185_) {
-            super(p_173178_, p_173179_, p_173180_, p_173181_, p_173182_, p_173183_, p_173184_, p_173185_);
+        public OutputRenderType(String name, VertexFormat format, VertexFormat.Mode mode, int bufferSize, boolean affectsCrumbling, boolean sortOnUpload, Runnable setupState, Runnable clearState) {
+            super(name, format, mode, bufferSize, affectsCrumbling, sortOnUpload, setupState, clearState);
         }
     }
 }

@@ -1,8 +1,9 @@
 package net.permutated.exmachinis.machines.base;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.util.Mth;
@@ -12,12 +13,11 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.energy.EnergyStorage;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemStackHandler;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
+import net.neoforged.neoforge.energy.EnergyStorage;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemStackHandler;
 import net.permutated.exmachinis.ConfigHolder;
 import net.permutated.exmachinis.ExMachinis;
 import net.permutated.exmachinis.compat.exnihilo.ExNihiloAPI;
@@ -116,37 +116,22 @@ public abstract class AbstractMachineTile extends BlockEntity {
         return false;
     }
 
-    protected final LazyOptional<EnergyStorage> energy = LazyOptional.of(() -> energyStorage);
-    protected final LazyOptional<IItemHandler> handler = LazyOptional.of(() -> new PipeItemHandler(itemStackHandler));
-    protected final LazyOptional<IItemHandler> overlay = LazyOptional.of(() -> new OverlayItemHandler(itemStackHandler, upgradeStackHandler));
+    protected final IItemHandler pipeItemHandler = new PipeItemHandler(itemStackHandler);
+    protected final IItemHandler overlayItemhandler = new OverlayItemHandler(itemStackHandler, upgradeStackHandler);
 
-    @Nonnull
-    @Override
-    public <T> LazyOptional<T> getCapability(Capability<T> cap, @Nullable Direction side) {
-        if (cap == ForgeCapabilities.ITEM_HANDLER) {
-            if (side == null) {
-                return overlay.cast();
-            } else {
-                return handler.cast();
-            }
-        }
-        if (cap == ForgeCapabilities.ENERGY) {
-            return energy.cast();
-        }
-        return super.getCapability(cap, side);
+    /**
+     * Helper method for registering capabilities. Called by ForgeEventHandler.
+     * @param event the registration event
+     * @param blockEntityType the block entity being registered
+     */
+    public static void registerCapabilities(RegisterCapabilitiesEvent event, BlockEntityType<? extends AbstractMachineTile> blockEntityType) {
+        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, blockEntityType, (machine, side) -> side == null ? machine.overlayItemhandler : machine.pipeItemHandler);
+        event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, blockEntityType, (machine, side) -> machine.energyStorage);
     }
 
     public void dropItems() {
         AbstractMachineTile.dropItems(level, worldPosition, itemStackHandler);
         AbstractMachineTile.dropItems(level, worldPosition, upgradeStackHandler);
-    }
-
-    @Override
-    public void invalidateCaps() {
-        super.invalidateCaps();
-        energy.invalidate();
-        handler.invalidate();
-        overlay.invalidate();
     }
 
     int remainder = 0;
@@ -222,22 +207,22 @@ public abstract class AbstractMachineTile extends BlockEntity {
 
     // Save TE data to disk
     @Override
-    protected void saveAdditional(CompoundTag tag) {
+    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         tag.putInt(Constants.NBT.VERSION, version);
-        tag.put(Constants.NBT.ENERGY, energyStorage.serializeNBT());
-        tag.put(Constants.NBT.INVENTORY, itemStackHandler.serializeNBT());
-        tag.put(Constants.NBT.UPGRADES, upgradeStackHandler.serializeNBT());
+        tag.put(Constants.NBT.ENERGY, energyStorage.serializeNBT(registries));
+        tag.put(Constants.NBT.INVENTORY, itemStackHandler.serializeNBT(registries));
+        tag.put(Constants.NBT.UPGRADES, upgradeStackHandler.serializeNBT(registries));
     }
 
 
     // Load TE data from disk
     @Override
-    public void load(CompoundTag tag) {
+    public void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         version = tag.getInt(Constants.NBT.VERSION);
-        energyStorage.deserializeNBT(tag.get(Constants.NBT.ENERGY));
-        itemStackHandler.deserializeNBT(tag.getCompound(Constants.NBT.INVENTORY));
-        upgradeStackHandler.deserializeNBT(tag.getCompound(Constants.NBT.UPGRADES));
-        super.load(tag);
+        energyStorage.deserializeNBT(registries, tag.get(Constants.NBT.ENERGY));
+        itemStackHandler.deserializeNBT(registries, tag.getCompound(Constants.NBT.INVENTORY));
+        upgradeStackHandler.deserializeNBT(registries, tag.getCompound(Constants.NBT.UPGRADES));
+        super.loadAdditional(tag, registries);
     }
 
     // Called whenever a block update happens on the client
@@ -332,6 +317,13 @@ public abstract class AbstractMachineTile extends BlockEntity {
                 return true;
             }
             return false;
+        }
+
+        @Override
+        public void deserializeNBT(HolderLookup.Provider provider, @Nullable Tag nbt) {
+            if (nbt != null) {
+                super.deserializeNBT(provider, nbt);
+            }
         }
     }
 }

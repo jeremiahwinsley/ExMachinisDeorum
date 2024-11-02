@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "group": "exmachinis",
+  "key": {
+    "n": {
+      "tag": "c:gems/diamond"
+    },
+    "u": {
+      "item": "exmachinis:gold_upgrade"
+    }
+  },
+  "pattern": [
+    "nun",
+    "nun",
+    "nun"
+  ],
+  "result": {
+    "count": 1,
+    "id": "exmachinis:diamond_upgrade"
+  }
+}

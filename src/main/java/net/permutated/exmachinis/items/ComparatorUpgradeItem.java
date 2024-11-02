@@ -12,7 +12,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
-import net.permutated.exmachinis.util.Constants;
+import net.permutated.exmachinis.ModRegistry;
+import net.permutated.exmachinis.components.DirectionComponent;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -26,12 +27,12 @@ public class ComparatorUpgradeItem extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flagIn) {
-        super.appendHoverText(stack, level, tooltip, flagIn);
-
+    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag tooltipFlag) {
+        super.appendHoverText(stack, context, tooltip, tooltipFlag);
         String direction = Optional.of(stack)
-            .map(ItemStack::getTag)
-            .map(tag -> tag.getString(Constants.NBT.DIRECTION))
+            .map(s -> s.get(ModRegistry.DIRECTION_COMPONENT))
+            .map(DirectionComponent::direction)
+            .map(Direction::toString)
             .orElse("NONE");
 
         tooltip.add(translateTooltip("comparatorDirection", direction).withStyle(ChatFormatting.WHITE));
@@ -44,9 +45,8 @@ public class ComparatorUpgradeItem extends Item {
     public static @Nullable Direction getDirection(ItemStack stack) {
         if (stack.getItem() instanceof ComparatorUpgradeItem) {
             return Optional.of(stack)
-                .map(ItemStack::getTag)
-                .map(tag -> tag.getString(Constants.NBT.DIRECTION))
-                .map(Direction::byName)
+                .map(s -> s.get(ModRegistry.DIRECTION_COMPONENT))
+                .map(DirectionComponent::direction)
                 .orElse(null);
         }
         return null;
@@ -56,7 +56,7 @@ public class ComparatorUpgradeItem extends Item {
     public InteractionResult useOn(UseOnContext context) {
         if (context.isSecondaryUseActive()) {
             ItemStack stack = context.getItemInHand().copy();
-            stack.getOrCreateTag().putString(Constants.NBT.DIRECTION, context.getClickedFace().toString());
+            stack.set(ModRegistry.DIRECTION_COMPONENT, new DirectionComponent(context.getClickedFace()));
             context.getPlayer().setItemInHand(context.getHand(), stack);
             return InteractionResult.CONSUME;
         }
@@ -67,7 +67,7 @@ public class ComparatorUpgradeItem extends Item {
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         if (player.isSecondaryUseActive()) {
             ItemStack stack = player.getItemInHand(hand).copy();
-            stack.removeTagKey(Constants.NBT.DIRECTION);
+            stack.remove(ModRegistry.DIRECTION_COMPONENT);
             return InteractionResultHolder.consume(stack);
         }
         return super.use(level, player, hand);

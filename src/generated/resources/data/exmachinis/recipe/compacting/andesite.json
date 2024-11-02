@@ -1,0 +1,19 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "minecraft"
+    }
+  ],
+  "type": "exmachinis:compacting",
+  "input": {
+    "count": 4,
+    "ingredient": {
+      "item": "exdeorum:andesite_pebble"
+    }
+  },
+  "output": {
+    "count": 1,
+    "id": "minecraft:andesite"
+  }
+}

@@ -3,14 +3,11 @@ package net.permutated.exmachinis.data.client;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.Item;
-import net.minecraftforge.client.model.generators.ItemModelProvider;
-import net.minecraftforge.common.data.ExistingFileHelper;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.client.model.generators.ItemModelProvider;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.permutated.exmachinis.ExMachinis;
 import net.permutated.exmachinis.ModRegistry;
-
-import java.util.Collection;
+import net.permutated.exmachinis.util.ResourceUtil;
 
 public class ItemModels extends ItemModelProvider {
     public ItemModels(PackOutput packOutput, ExistingFileHelper fileHelper) {
@@ -18,16 +15,14 @@ public class ItemModels extends ItemModelProvider {
     }
 
     private ResourceLocation res(String name) {
-        return new ResourceLocation(ExMachinis.MODID, "item/".concat(name));
+        return ResourceUtil.prefix("item/".concat(name));
     }
 
     @Override
     protected void registerModels() {
-        Collection<RegistryObject<Item>> entries = ModRegistry.ITEMS.getEntries();
+        ResourceLocation generated = ResourceLocation.withDefaultNamespace("item/generated");
 
-        ResourceLocation generated = new ResourceLocation("item/generated");
-
-        entries.stream()
+        ModRegistry.ITEMS.getEntries().stream()
             .filter(item -> !(item.get() instanceof BlockItem))
             .forEach(item -> {
                 String name = item.getId().getPath();
