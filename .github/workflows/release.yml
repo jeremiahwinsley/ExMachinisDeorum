@@ -2,6 +2,8 @@ name: Release Build
 
 on:
   release:
+    permissions:
+      contents: write
     types:
       - published
 
@@ -9,8 +11,6 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
 
     steps:
       - uses: actions/checkout@v4
@@ -29,7 +29,7 @@ jobs:
         run: chmod +x gradlew
       - name: Build with Gradle
         run: ./gradlew build
-      - name: Upload assets to GitHub, Modrinth and CurseForge
+      - name: Upload assets to Modrinth and CurseForge
         uses: Kir-Antipov/mc-publish@v3.3
         with:
           modrinth-id: anSnGwH7
@@ -38,18 +38,16 @@ jobs:
           curseforge-id: 980111
           curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
 
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-
           name: ""
           loaders: |
             forge
             neoforge
           dependencies: |
             ex-deorum(required){modrinth:WP0FLyzv}{curseforge:901420}
-      - name: Upload checksum
+      - name: Upload jar and checksum to Github release
         id: upload-release-assets
-        uses: alexellis/upload-assets@0.4.0
+        uses: alexellis/upload-assets@0.4.1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          asset_paths: '["build/checksums/*.sha512"]'
+          asset_paths: '["build/libs/*.jar", "build/checksums/*.sha512"]'
