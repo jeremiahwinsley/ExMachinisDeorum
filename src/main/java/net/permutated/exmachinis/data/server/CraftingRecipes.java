@@ -146,6 +146,7 @@ public class CraftingRecipes extends RecipeProvider {
             Map.entry(BlockList.PLATINUM_ORE_ITEM, EItems.PLATINUM_ORE_CHUNK),
             Map.entry(BlockList.URANIUM_ORE_ITEM, EItems.URANIUM_ORE_CHUNK),
             Map.entry(BlockList.ZINC_ORE_ITEM, EItems.ZINC_ORE_CHUNK),
+            Map.entry(BlockList.IRIDIUM_ORE_ITEM, EItems.IRIDIUM_ORE_CHUNK),
             Map.entry(BlockList.OSMIUM_ORE_ITEM, EItems.OSMIUM_ORE_CHUNK)
         );
 

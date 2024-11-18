@@ -141,7 +141,11 @@ public class Languages {
                 The Item Buffer will take items from the internal inventory,
                 and move them into an inventory below.
 
-                Upgrades can be added to increase the number of items processed at once.
+                It will attempt to move all items in the inventory each cycle.
+
+                Upgrades can be added to increase the cycle speed.
+
+                Does not require power.
 
                 A comparator upgrade can be added to produce a redstone signal in a particular direction.
                 You could use this to turn off other machines.

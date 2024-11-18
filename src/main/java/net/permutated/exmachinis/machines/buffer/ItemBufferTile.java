@@ -59,28 +59,11 @@ public class ItemBufferTile extends AbstractMachineTile {
                 workStatus = WorkStatus.WORKING;
             }
 
-            int maxProcessed = getUpgradeItemsProcessed();
-
             // iterate input slots until reaching the end, or running out of operations
             for (int i = 0; i < itemStackHandler.getSlots(); i++) {
-                if (maxProcessed == 0) {
-                    break;
-                }
-
                 ItemStack stack = itemStackHandler.getStackInSlot(i);
                 if (!stack.isEmpty()) {
-                    int extractCount;
-
-                    int count = stack.getCount();
-                    if (count >= maxProcessed) {
-                        extractCount = maxProcessed;
-                        maxProcessed = 0;
-                    } else {
-                        extractCount = count;
-                        maxProcessed -= count;
-                    }
-
-                    var extractResult = itemStackHandler.extractItem(i, extractCount, true);
+                    var extractResult = itemStackHandler.extractItem(i, stack.getMaxStackSize(), true);
                     var insertResult = ItemHandlerHelper.insertItemStacked(itemHandler, extractResult, true);
 
                     // only move items if the leftover amount is less than the extracted amount
