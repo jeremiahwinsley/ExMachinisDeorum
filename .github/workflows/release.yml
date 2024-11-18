@@ -40,7 +40,6 @@ jobs:
 
           name: ""
           loaders: |
-            forge
             neoforge
           dependencies: |
             ex-deorum(required){modrinth:WP0FLyzv}{curseforge:901420}
