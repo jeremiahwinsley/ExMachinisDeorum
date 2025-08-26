@@ -8,6 +8,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.items.ItemStackHandler;
 import net.permutated.exmachinis.ConfigHolder;
 import net.permutated.exmachinis.ModRegistry;
 import net.permutated.exmachinis.compat.exnihilo.ExNihiloAPI;
@@ -34,6 +35,10 @@ public class FluxSieveTile extends AbstractMachineTile {
 
     protected boolean isWaterlogged() {
         return this.getBlockState().getValue(FluxSieveBlock.WATERLOGGED);
+    }
+
+    protected ItemStackHandler getUpgradeStackHandler() {
+        return upgradeStackHandler;
     }
 
     @Override

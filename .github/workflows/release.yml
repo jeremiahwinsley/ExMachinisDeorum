@@ -9,9 +9,7 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
       - name: Set up JDK 21
@@ -38,15 +36,18 @@ jobs:
           curseforge-id: 980111
           curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
 
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
           name: ""
           loaders: |
             neoforge
           dependencies: |
             ex-deorum(required){modrinth:WP0FLyzv}{curseforge:901420}
-      - name: Upload jar and checksum to Github release
+          fail-mode: warn
+      - name: Upload checksum
         id: upload-release-assets
         uses: alexellis/upload-assets@0.4.1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          asset_paths: '["build/libs/*.jar", "build/checksums/*.sha512"]'
+          asset_paths: '["build/checksums/*.sha512"]'
