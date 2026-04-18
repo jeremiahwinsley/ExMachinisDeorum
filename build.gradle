@@ -111,18 +111,6 @@ repositories {
         forRepositories(fg.repository)
         forRepository {
             maven {
-                name "Modrinth"
-                url "https://api.modrinth.com/maven"
-            }
-        }
-        filter {
-            includeGroup "maven.modrinth"
-        }
-    }
-    exclusiveContent {
-        forRepositories(fg.repository)
-        forRepository {
-            maven {
                 name "CurseMaven"
                 url "https://www.cursemaven.com"
             }
@@ -157,7 +145,7 @@ dependencies {
     runtimeOnly fg.deobf("curse.maven:storage-drawers-223852:4668552")
     runtimeOnly fg.deobf("curse.maven:jade-324717:4801177")
 
-    implementation fg.deobf('maven.modrinth:jei:HU1FUi8s')
+    implementation fg.deobf('curse.maven:jei-238222:7391695')
     implementation fg.deobf("curse.maven:ex-deorum-901420:5129108")
     runtimeOnly fg.deobf("thedarkcolour.modkit:ModKit:1.0")
 }
