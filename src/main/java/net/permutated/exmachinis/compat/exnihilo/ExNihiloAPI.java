@@ -51,14 +51,14 @@ public class ExNihiloAPI {
 
     public static boolean canHammer(ItemStack stack) {
         return itemFromItemStack(stack)
-            .map(RecipeUtil::getHammerRecipe)
+            .map(RecipeUtil.getServerRecipeCaches()::getHammerRecipe)
             .isPresent();
     }
 
     public static List<ItemStack> getHammerResult(ServerLevel level, ItemStack stack) {
         LootContext context = RecipeUtil.emptyLootContext(level);
         return itemFromItemStack(stack)
-            .map(RecipeUtil::getHammerRecipe)
+            .map(RecipeUtil.getServerRecipeCaches()::getHammerRecipe)
             .map(recipe -> getProbabilityResult(context, recipe, 0))
             .map(List::of).orElseGet(ArrayList::new);
     }
@@ -73,7 +73,7 @@ public class ExNihiloAPI {
 
     public static boolean canSieve(ItemStack stack, ItemStack mesh, boolean waterlogged) {
         if (mesh.getItem() instanceof MeshItem meshItem) {
-            return !RecipeUtil.getSieveRecipes(meshItem, stack).isEmpty();
+            return !RecipeUtil.getServerRecipeCaches().getSieveRecipes(meshItem, stack).isEmpty();
         }
         return false;
     }
@@ -81,7 +81,7 @@ public class ExNihiloAPI {
     public static List<ItemStack> getSieveResult(ServerLevel level, ItemStack stack, ItemStack mesh, boolean waterlogged) {
         if (mesh.getItem() instanceof MeshItem meshItem) {
             LootContext context = RecipeUtil.emptyLootContext(level);
-            var recipes = RecipeUtil.getSieveRecipes(meshItem, stack);
+            var recipes = RecipeUtil.getServerRecipeCaches().getSieveRecipes(meshItem, stack);
 
             int fortune = 0;
             if (Boolean.TRUE.equals(ConfigHolder.SERVER.sieveFortuneEnabled.get())) {

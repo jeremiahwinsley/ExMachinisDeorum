@@ -160,7 +160,7 @@ dependencies {
     implementation "curse.maven:jei-238222:5846880"
     implementation "curse.maven:ato-405593:5735707"
 
-    implementation "curse.maven:ex-deorum-901420:5789927"
+    implementation "curse.maven:ex-deorum-901420:8322037"
     runtimeOnly 'com.github.thedarkcolour:ModKit:81a0889b26'
 }
 
